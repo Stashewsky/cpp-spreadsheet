@@ -143,22 +143,24 @@ public:
     }
 
     double Evaluate(std::function<double(Position)>& args) const override {
+        auto lhs_val = lhs_->Evaluate(args);
+        auto rhs_val = rhs_->Evaluate(args);
         switch(type_) {
             case Add:
-                return lhs_->Evaluate(args) + rhs_->Evaluate(args);
+                return lhs_val + rhs_val;
                 break;
             case Subtract:
-                return lhs_->Evaluate(args) - rhs_->Evaluate(args);
+                return lhs_val - rhs_val;
                 break;
             case Divide:
-                if(rhs_->Evaluate(args) != 0){
-                    return lhs_->Evaluate(args) / rhs_->Evaluate(args);
+                if(rhs_val != 0){
+                    return lhs_val / rhs_val;
                 }else{
                     throw FormulaError(FormulaError::Category::Arithmetic);
                 }
                 break;
             case Multiply:
-                return lhs_->Evaluate(args) * rhs_->Evaluate(args);
+                return lhs_val * rhs_val;;
                 break;
             default:
                 throw FormulaError(FormulaError::Category::Value);
@@ -201,15 +203,12 @@ public:
     }
 
     double Evaluate(std::function<double(Position)>& args) const override {
-        switch (type_) {
-            case UnaryPlus:
-                return operand_->Evaluate(args);
-                break;
-            case UnaryMinus:
-                return -operand_->Evaluate(args);
-                break;
-            default:
-                throw FormulaError(FormulaError::Category::Value);
+        if(type_ == UnaryPlus){
+            return operand_->Evaluate(args);
+        }else if(type_ == UnaryMinus){
+            return -operand_->Evaluate(args);
+        }else{
+            throw FormulaError(FormulaError::Category::Value);
         }
     }
 
